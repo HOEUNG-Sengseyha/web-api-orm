@@ -2,23 +2,22 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const express = require('express');
-const app = express();
-const userData = require('./users.json');
+const morgan = require('morgan');
+const userRoutes = require("./web-api/routers/userRoutes")
 
-// Serve static files from the "public" directory under the "/assets" path
+const app = express(); // Initialize the Express application
+
+app.set("view engine", 'ejs');
 app.use('/assets', express.static('public'));
+app.use(express.json()); // Middleware to parse JSON bodies
 
-// Root route to serve HTML with CSS and an image
-app.get('/', (req, res) => {
-    res.send("<link rel='stylesheet' href='/assets/css/styles.css'><h1 style='color: red'><img src='/assets/img/promise.webp'>NodeJS Project</h1>");
-});
+// Logging middleware
+app.use(morgan('dev'));
 
-// Route to get user data from the JSON file
-app.get('/users', (req, res) => {
-    res.send(userData);
-});
+// Use the user routes
+app.use(userRoutes);
 
-// Start the server and listen on the port defined in the .env file or default to 80
+// Start the server
 app.listen(process.env.PORT, ()=> {
     console.log("Server is running on http://localhost");
 })
